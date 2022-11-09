@@ -1,6 +1,6 @@
 from domain.employee import Employee
-from domain.employee_repository import EmployeeRepository
-from birthday_service import BirthdayService
+from domain.ports.employee_repository import EmployeeRepository
+from domain.birthday_service import BirthdayService
 
 import pytest
 
@@ -34,8 +34,10 @@ def test_should_return_a_list_of_employee_when_repository_is_called(john, mary):
 def test_can_send_a_greeting_when_its_john_birthday(john):
     today = "2022/10/08"
     employee_repository = EmployeeRepository(list_employees=[john])
-    bs = BirthdayService(employee_repository=employee_repository, email_service=None)
-    send_a_greeting = bs.can_send_a_greeting(employee=john, date=today)
+    birthday_service = BirthdayService(
+        employee_repository=employee_repository, email_service=None
+    )
+    send_a_greeting = birthday_service.can_send_a_greeting(employee=john, date=today)
     assert send_a_greeting
 
 
@@ -45,8 +47,10 @@ def test_can_send_a_greeting_when_its_john_birthday(john):
 )
 def test_cant_send_a_greeting_when_its_not_john_birthday(today, john):
     employee_repository = EmployeeRepository(list_employees=[john])
-    bs = BirthdayService(employee_repository=employee_repository, email_service=None)
-    send_a_greeting = bs.can_send_a_greeting(employee=john, date=today)
+    birthday_service = BirthdayService(
+        employee_repository=employee_repository, email_service=None
+    )
+    send_a_greeting = birthday_service.can_send_a_greeting(employee=john, date=today)
     assert not send_a_greeting
 
 
@@ -54,3 +58,7 @@ def test_should_return_no_employees_when_repository_is_empty():
     employee_repository = EmployeeRepository(list_employees=[])
     list_employees = employee_repository.get_all_employees()
     assert list_employees == []
+
+
+# Spy pour la fonction send_email
+# Appeler send_email x fois en fonction du nombre d'employés dont s'est l'anniversaire
